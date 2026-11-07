@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "dotenv": "^18.0.9",
-    "ollama": "^0.6.4",
+    "openai": "^7.53.0",
     "zod": "^4.6.7"
   }
 }

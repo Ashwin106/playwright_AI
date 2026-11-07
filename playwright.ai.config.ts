@@ -5,7 +5,7 @@ export default defineConfig({
   ...baseConfig,
   testDir: './tests/ai',
   testIgnore: [],
-  projects: [{ name: 'openai-smoke' }],
+  projects: [{ name: 'ollama-smoke' }],
   reporter: 'list',
   timeout: 120_000,
 });

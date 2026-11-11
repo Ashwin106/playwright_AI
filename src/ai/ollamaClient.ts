@@ -1,6 +1,10 @@
 import { Ollama } from 'ollama';
 import { ollamaGenerateResponseSchema } from './schemas/ollamaResponse';
 
+declare const process: {
+  env: Record<string, string | undefined>;
+};
+
 const host = process.env.OLLAMA_HOST?.trim() || 'http://localhost:11434';
 const model = process.env.OLLAMA_MODEL?.trim() || 'qwen2.5-coder:3b';
 const ollama = new Ollama({ host });

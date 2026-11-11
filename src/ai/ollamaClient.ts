@@ -1,39 +1,35 @@
 import { Ollama } from 'ollama';
-import { ollamaGenerateResponseSchema } from './schemas/ollamaResponse';
-
-declare const process: {
-  env: Record<string, string | undefined>;
-};
-
-const host = process.env.OLLAMA_HOST?.trim() || 'http://localhost:11434';
-const model = process.env.OLLAMA_MODEL?.trim() || 'qwen2.5-coder:3b';
-const ollama = new Ollama({ host });
+const host = process.env.OLLAMA_HOST?.trim() || 'http://localhost:11434'; //ollama's standard port is 11434
+const model = process.env.OLLAMA_MODEL?.trim() || 'qwen2.5-coder:3b'; // AI model
+const ollama = new Ollama({ host }); //create active client object ready to send requests to ollama server
 
 export async function sendPrompt(prompt: string): Promise<string> {
-  if (!prompt.trim()) {
-    throw new TypeError('Prompt must not be empty.');
-  }
+  const cleanPrompt = prompt?.trim(); // to remove whitespaces
 
-  console.info(`[Ollama] Sending prompt to model "${model}".`);
+// check whether the prompt is empty after trimming whitespace
+  if (!cleanPrompt) {
+    throw new Error('Prompt cannot be empty.');
+  }
 
   try {
     const result = await ollama.generate({
       model,
-      prompt,
+      prompt: cleanPrompt,
       stream: false,
     });
-    const parsedResponse = ollamaGenerateResponseSchema.safeParse(result);
-
-    if (!parsedResponse.success) {
-      throw new Error('Ollama returned an invalid or empty text response.');
+   // check if the response is a string and trim it, otherwise set it to an empty string
+    const response = typeof result?.response === 'string' ? result.response.trim() : '';
+   // error handling for empty response from Ollama
+    if (!response) {
+      throw new Error('Ollama returned an empty response.');
     }
 
-    console.info(`[Ollama] Received a non-empty response from "${model}".`);
-    return parsedResponse.data.response;
+    return response;
+    // return the trimmed response from Ollama
   } catch (error) {
-    const errorType = error instanceof Error ? error.name : 'Unknown error';
-    const message = `Request to Ollama model "${model}" failed (${errorType}). Confirm Ollama is running and OLLAMA_HOST is reachable.`;
-    console.error(`[Ollama] ${message}`);
-    throw new Error(message, { cause: error });
+    // log the error and throw a new error with a user-friendly message
+    const message = 'Ollama request failed. Check that Ollama is running and OLLAMA_HOST is correct.';
+    console.error(message, error);
+    throw new Error(message);
   }
 }

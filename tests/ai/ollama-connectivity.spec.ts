@@ -1,10 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { sendPrompt } from '../../src/ai/ollamaClient';
 
-test('local Ollama model returns a non-empty response', async () => {
+test('Test ollama response', async () => {
   test.setTimeout(120_000);
 
-  const response = await sendPrompt('Reply with a short greeting.');
+  const response = await sendPrompt(
+    'Explain Playwright in two sentences.'
+);
 
-  expect(response.trim()).not.toBe('');
+console.log('Ollama response:', response);
+
+expect(response.length).toBeGreaterThan(0);
 });

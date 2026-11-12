@@ -1,36 +1,33 @@
 
 import { test, expect } from '@playwright/test';
-
+import { InputProcessor } from '../../src/input/inputprocessor';
 import { PlannerAgent } from '../../src/agents/plannerAgent';
+import path from 'path/win32';
+import fs from 'fs';
 
 test('Planner Agent should analyse login requirements', async () => {
 
     test.setTimeout(120000);
 
-    // Step 1: Create Planner Agent
+    //  Create Planner Agent
 
     const planner = new PlannerAgent();
 
-    // Step 2: Give requirement
+    // Give requirement
+    //locate file
+    // const filepath = path.resolve(process.cwd(), 'input/login_req.txt');
 
-    const requirement = `
-    Create login functionality.
+    // const requirement = fs.readFileSync(filepath, 'utf-8');
+    const input = await InputProcessor.readRequirementFile(
+        'input/login_req.txt');
 
-    Username and password are mandatory.
+    // Execute Planner Agent
 
-    Invalid credentials should display an error message.
-
-    Valid credentials should navigate to dashboard.
-    `;
-
-    // Step 3: Execute Planner Agent
-
-    const result = await planner.execute(requirement);
+    const result = await planner.execute(input.content);
 
     // Step 4: Display AI output
 
-    console.log('\n===== PLANNER AGENT OUTPUT =====');
-
+    console.log('===== PLANNER AGENT OUTPUT =====');
     console.log(JSON.stringify(result, null, 2));
 
     // Step 5: Validate result
